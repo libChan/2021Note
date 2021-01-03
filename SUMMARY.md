@@ -2,4 +2,4 @@
 
 * [目录](README.md)
 
-- [LeetCode](leetcode.md)
+- [剑指Offer](leetcode.md)
