@@ -37,6 +37,8 @@ class Solution {
 }
 ```
 
+
+
 ## [二维数组中的查找](https://leetcode-cn.com/problems/er-wei-shu-zu-zhong-de-cha-zhao-lcof/)
 
 #### 题目描述
@@ -79,3 +81,29 @@ class Solution {
 }
 ```
 
+## [替换空格](https://leetcode-cn.com/problems/ti-huan-kong-ge-lcof/)
+
+#### 题目描述
+
+请实现一个函数，把字符串 `s` 中的每个空格替换成"%20"。
+
+```
+输入：s = "We are happy."
+输出："We%20are%20happy."
+0 <= s 的长度 <= 10000
+```
+
+#### 思路
+
+```java
+class Solution {
+    public String replaceSpace(String s) {
+        if(s == null) return null;
+        return s.replaceAll(" ", "%20");
+    }
+}
+```
+
+## [螺旋矩阵](https://leetcode-cn.com/problems/spiral-matrix/)
+
+题目描述
