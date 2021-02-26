@@ -1,5 +1,7 @@
 ## Java并发基础篇
 
+[TOC]
+
 重点难点，加油！！！
 
 ### 1 进程和线程
@@ -224,6 +226,94 @@ NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED;
 ==省略了详细的状态转换，[详见](http://concurrent.redspider.group/article/01/4.html)==
 
 #### 5.2 线程中断
+
+==直接搬了原文==
+
+> 在某些情况下，我们在线程启动后发现并不需要它继续执行下去时，需要中断线程。目前在Java里还没有安全直接的方法来停止线程，但是Java提供了线程中断机制来处理需要中断线程的情况。
+>
+> 线程中断机制是一种协作机制。需要注意，通过中断操作并不能直接终止一个线程，而是通知需要被中断的线程自行处理。
+
+简单介绍下Thread类里提供的关于线程中断的几个方法：
+
+- Thread.interrupt()：中断线程。这里的中断线程并不会立即停止线程，而是设置线程的中断状态为true（默认是flase）；
+- Thread.interrupted()：测试当前线程是否被中断。线程的中断状态受这个方法的影响，意思是调用一次使线程中断状态设置为true，连续调用两次会使得这个线程的中断状态重新转为false；
+- Thread.isInterrupted()：测试当前线程是否被中断。与上面方法不同的是调用这个方法并不会影响线程的中断状态。
+
+
+
+### 6 Java线程间通信
+
+#### 6.1锁与同步
+
+使用对象锁+synchronized锁住代码块。
+
+```java
+public class ObjectLock {
+    private static Object lock = new Object();
+
+    static class ThreadA implements Runnable {
+        @Override
+        public void run() {
+            synchronized (lock) {
+                /**/
+            }
+        }
+    }
+
+    static class ThreadB implements Runnable {
+        @Override
+        public void run() {
+            synchronized (lock) {
+                /**/
+            }
+        }
+    }
+}
+```
+
+#### 6.2 等待/通知
+
+锁机制，线程不断地申请锁，会浪费资源。
+
+Java多线程的等待/通知机制是基于`Object`类的`wait()`方法和`notify()`, `notifyAll()`方法实现的。
+
+使用`lock.notify()`叫醒另一个线程，使用`lock.wait()`释放锁。
+
+#### 6.3 信号量
+
+JDK提供了一个类似于“信号量”功能的类`Semaphore`。但这里介绍基于`volatile`关键字实现的信号量通信。
+
+**volatile关键字能够保证内存的可见性，如果用volatile关键字声明了一个变量，在一个线程里面改变了这个变量的值，那其它线程是立马可见更改后的值的。**
+
+这里需要注意的是，`volatile`变量需要进行原子操作。
+
+#### 6.4 管道
+
+管道是基于“管道流”的通信方式。JDK提供了`PipedWriter`、 `PipedReader`、 `PipedOutputStream`、 `PipedInputStream`。其中，前面两个是基于字符的，后面两个是基于字节流的。
+
+使用管道多半与I/O流相关。当我们一个线程需要先另一个线程发送一个信息（比如字符串）或者文件等等时，就需要使用管道通信了。
+
+#### 6.5 join()方法—其他通信方法
+
+join()方法是Thread类的一个实例方法。它的作用是让当前线程陷入“等待”状态，等join的这个线程执行完成后，再继续执行当前线程。
+
+有时候，主线程创建并启动了子线程，如果子线程中需要进行大量的耗时运算，如果主线程想等待子线程执行完毕后，获得子线程中的处理完的某个数据，就要用到join方法了。
+
+#### 6.6 sleep()方法—其他通信方法
+
+**sleep方法是不会释放当前的锁的，而wait方法会。**==这也是最常见的一个多线程面试题。==
+
+它们还有这些区别：
+
+- wait可以指定时间，也可以不指定；而sleep必须指定时间。
+- wait释放cpu资源，同时释放锁；sleep释放cpu资源，但是不释放锁，所以易死锁。
+- wait必须放在同步块或同步方法中，而sleep可以再任意位置。
+
+#### 6.7 ThreadLocal类—其他通信方法
+
+==没太懂这里，马一下==
+
+
 
 
 
