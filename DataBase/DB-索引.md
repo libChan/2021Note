@@ -49,7 +49,7 @@
 索引包含所有查询列。比如：
 
 ```sql
-(name, age)是组会索引
+(name, age)是组合索引
 select name, age from stu where name = "chan"; 
 ```
 

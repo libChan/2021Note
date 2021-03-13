@@ -1,7 +1,6 @@
 # Table of contents
 
 - [目录](README.md)
-
 - [剑指Offer](./Leetcode/README.md)
   - [03.数组中重复的数字](./Leetcode/03.数组中重复的数字.md)
   - [04.二维数组中的查找](./Leetcode/04.二维数组中的查找.md)
@@ -17,4 +16,6 @@
   - [06.从尾到头打印链表](./Leetcode/06.从尾到头打印链表.md)
   - [18.删除链表的节点](./Leetcode/18.删除链表的节点.md)
   - [22.链表中倒数第k个节点](./Leetcode/22.链表中倒数第k个节点.md)
+- [数据库](./DataBase/README.md)
+  - [锁](./DataBase/DB-锁.md)
 
