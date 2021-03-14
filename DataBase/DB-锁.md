@@ -110,9 +110,9 @@ Buffer Pool的使用大大提高了读写数据的效率，但是也带了新的
 - 意向共享锁（IS）：事务打算给行**加行共享锁**，加S之前**先取得该表的IS**。
 - 意向排他锁（IX）：事务打算给行**加行排他锁**，加X之前**先取得该表的IX**。
 
-> 由于InnoDB支持的是行级别锁，因此意向锁不会阻塞除全表扫描外的任何请求。==？==
+> 由于InnoDB支持的是行级别锁，因此意向锁不会阻塞除全表扫描外的任何请求。
 
-InnoDB中锁的兼容性：==？==
+InnoDB中锁的兼容性：
 
 |        | **IS** | **IX** | **S** | **X** |
 | :----: | :----: | :----: | :---: | :---: |
@@ -179,7 +179,7 @@ MySQL5.1.22版本后，**InnoDB提供轻量级互斥量的自增长实现机制�
 
 单个行记录上的锁。锁住索引记录。
 
-> 如果InnoDB表在建立的时候没有设置任何索引，InnoDB会使用隐式的主键来进行锁定。==？==
+> 如果InnoDB表在建立的时候没有设置任何索引，InnoDB会使用隐式的主键来进行锁定。
 
 ##### Gap Lock
 
@@ -218,15 +218,15 @@ Gap+Record。锁定一个范围，并锁定记录本身。**InnoDB对于行的�
 
 幻读：
 
-| 事务A                                                        | 事务B                       |
-| ------------------------------------------------------------ | --------------------------- |
-| SET SESSION<br />tx_isolation = 'READ-COMMITED';（Record Lock） |                             |
-| BEGIN;                                                       |                             |
-| SELECT * FROM t where a > 2 FOR UPDATE<br />==返回 a ：5==   |                             |
-|                                                              | BEGIN;                      |
-|                                                              | ==INSERT INTO t Select 4;== |
-|                                                              | COMMIT;                     |
-| SELECT * FROM t where a > 2 FOR UPDATE<br />==返回 a : 5, a: 4== |                             |
+| 事务A                                                        | 事务B                   |
+| ------------------------------------------------------------ | ----------------------- |
+| SET SESSION<br />tx_isolation = 'READ-COMMITED';（Record Lock） |                         |
+| BEGIN;                                                       |                         |
+| SELECT * FROM t where a > 2 FOR UPDATE<br />返回 a ：5       |                         |
+|                                                              | BEGIN;                  |
+|                                                              | INSERT INTO t Select 4; |
+|                                                              | COMMIT;                 |
+| SELECT * FROM t where a > 2 FOR UPDATE<br />返回 a : 5, a: 4== |                         |
 
 但如果采用RR级别下的Next-Lock，第一次事务A执行查询语句`SELECT * FROM t where a > 2 FOR UPDATE`，锁住的不仅是5这个值，还对(2, +∞)这个范围加了X锁。在这个范围内别的事务无法插入数据，避免幻读。
 
