@@ -1,6 +1,6 @@
 # Table of contents
 
-- [目录](README.md)
+- [面向Offer的Java开发指南](README.md)
 
 - [剑指Offer](./Leetcode/README.md)
   - [03.数组中重复的数字](./Leetcode/03.数组中重复的数字.md)
@@ -27,7 +27,7 @@
   
 - [计算机网络](./Network/README.md)
 
-  - [应用层](./Network/y应用层.md)
+  - [应用层](./Network/应用层.md)
   - [传输层](./Network/传输层.md)
 
 - [操作系统](./OS/README.md)
