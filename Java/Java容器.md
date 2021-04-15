@@ -18,7 +18,7 @@
 
 #### ArrayList扩容机制
 
-
+初始大小为10，当添加元素到需要扩容时，容量变为原来的1.5倍，
 
 ### Set
 
@@ -83,29 +83,27 @@ loadFactor 加载因子是控制数组存放数据的疏密程度，loadFactor �
 
 
 
-HashMap常见问题：
+**HashMap常见问题：**
 
-- table的初始化时机是什么时候，默认初始大小是多少，阈值是多少？
+- **table的初始化时机是什么时候，默认初始大小是多少，阈值是多少？**
 
 一般采用默认无参构造方法的话，第一次put时调用resize进行初始化。默认初始容量是16，阈值 = 16 * 0.75 = 12。
 
-- 什么时候触发扩容，扩容之后的 table.length、阀值各是多少？
+- **什么时候触发扩容，扩容之后的 table.length、阀值各是多少？**
 
 当size > 阈值时，进行扩容，扩容后容量大小为原来的2倍，阈值也为2倍，加载因子不变。
 
-- table 的 length 为什么是 2 的 n 次幂？
+- **table 的 length 为什么是 2 的 n 次幂？**
 
 为了利用位运算 & 求 key 的下标，需要利用好 & 运算的特点，当右边的数的低位二进制是连续的 1 ，且左边是一个均匀的数（需要 hash 方法实现，尽量保证 key 的 h 唯一），那么得到的结果就比较完美了。低位二进制连续的 1，我们很容易想到 2^n - 1。
 
-- 求索引的时候为什么是：h&(length-1)，而不是 h&length，更不是 h%length？
+- **求索引的时候为什么是：h&(length-1)，而不是 h&length，更不是 h%length？**
 
 h%length 效率不如位运算快；h&length 会导致 table 的空间得不到利用、降低 table 的操作效率。
 
-- Map map = new HashMap(1000); 当我们存入多少个元素时会触发map的扩容； Map map1 = new HashMap(10000); 我们存入第 10001个元素时会触发 map1 扩容吗？
+- **Map map = new HashMap(1000); 当我们存入多少个元素时会触发map的扩容； Map map1 = new HashMap(10000); 我们存入第 10001个元素时会触发 map1 扩容吗？**
 
-Map map = new HashMap(1000); 当我们存入多少个元素时会触发map的扩容 此时的 table.length = 2^10 = 1024; threshold = 1024 * 0.75 = 768; 所以存入第 769 个元素时进行扩容 Map map1 = new HashMap(10000); 我们存入第 10001个元素时会触发 map1 扩容吗 此时的 table.length = 2^14 = 16384; threshold = 16384 * 0.75 = 12288; 所以存入第 10001 个元素时不会进行扩容
-
-
+Map map = new HashMap(1000); 当我们存入多少个元素时会触发map的扩容 此时的 table.length = 2^10 = 1024; threshold = 1024 * 0.75 = 768; 所以存入第 769 个元素时进行扩容 Map map1 = new HashMap(10000); 我们存入第 10001个元素时会触发 map1 扩容吗 此时的 table.length = 2^14 = 16384; threshold = 16384 * 0.75 = 12288; 所以存入第 10001 个元素时不会进行扩容。
 
 #### ConcurrentHashMap
 
@@ -115,9 +113,15 @@ ConcurrentHashMap：那假如容器里有多把锁，每一把锁用于锁容器
 
 有些方法需要跨段，比如size()和containsValue()，它们可能需要锁定整个表而而不仅仅是某个段，这需要按顺序锁定所有段，操作完毕后，又按顺序释放所有段的锁。按序获取锁很重要，可以避免死锁。
 
-- JDK1.7
+- Java1.7：**ReentrantLock+Segment+HashEntry**
 
-Segment 数组（继承ReentrantLock）、HashEntry 组成（数组+链表）
+一个ConcurrentHashMap实例中包含由若干个Segment实例组成的数组，而一个Segment实例又包含由若干个桶，每个桶中都包含一条由若干个 HashEntry对象链接起来的链表。
+
+- Java1.8：**synchronized+CAS+HashEntry+红黑树**
+
+**Node 数组 + 链表 / 红黑树**
+
+
 
 #### HashMap遍历
 
