@@ -1,6 +1,6 @@
 # Table of contents
 
-- [面向Offer的Java开发指南](README.md)
+- [目录](README.md)
 - [剑指Offer](./Leetcode/README.md)
   - [03.数组中重复的数字](./Leetcode/03.数组中重复的数字.md)
   - [04.二维数组中的查找](./Leetcode/04.二维数组中的查找.md)
