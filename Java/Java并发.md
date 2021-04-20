@@ -1,9 +1,5 @@
 # Java并发基础篇
 
-[TOC]
-
-重点难点，加油！！！
-
 ## 1 进程和线程
 
 进程是程序的一次执行过程，是系统运行程序的基本单位，因此进程是动态的。
@@ -199,7 +195,7 @@ NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED;
 
 - RUNNABLE
 
-表示当前线程正在运行中。处于RUNNABLE状态的线程在Java虚拟机中运行，也有可能在等待CPU分配资源（==进入运行前的状态？==）。
+表示当前线程正在运行中。处于RUNNABLE状态的线程在Java虚拟机中运行，也有可能在等待CPU分配资源。
 
 > Java线程的**RUNNABLE**状态其实是包括了传统操作系统线程的**ready**和**running**两个状态的。
 
@@ -230,11 +226,7 @@ NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED;
 
 ![线程状态转换图](./img/线程状态转换图.png) 
 
-==省略了详细的状态转换，[详见](http://concurrent.redspider.group/article/01/4.html)==
-
 ### 5.2 线程中断
-
-==直接搬了原文==
 
 > 在某些情况下，我们在线程启动后发现并不需要它继续执行下去时，需要中断线程。目前在Java里还没有安全直接的方法来停止线程，但是Java提供了线程中断机制来处理需要中断线程的情况。
 >
@@ -245,8 +237,6 @@ NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING, TERMINATED;
 - Thread.interrupt()：中断线程。这里的中断线程并不会立即停止线程，而是设置线程的中断状态为true（默认是flase）；
 - Thread.interrupted()：测试当前线程是否被中断。线程的中断状态受这个方法的影响，意思是调用一次使线程中断状态设置为true，连续调用两次会使得这个线程的中断状态重新转为false；
 - Thread.isInterrupted()：测试当前线程是否被中断。与上面方法不同的是调用这个方法并不会影响线程的中断状态。
-
-
 
 ## 6 Java线程间通信
 
@@ -300,15 +290,15 @@ JDK提供了一个类似于“信号量”功能的类`Semaphore`。但这里介
 
 使用管道多半与I/O流相关。当我们一个线程需要先另一个线程发送一个信息（比如字符串）或者文件等等时，就需要使用管道通信了。
 
-### 6.5 join()方法—其他通信方法
+### 6.5 join()方法
 
 join()方法是Thread类的一个实例方法。它的作用是让当前线程陷入“等待”状态，等join的这个线程执行完成后，再继续执行当前线程。
 
 有时候，主线程创建并启动了子线程，如果子线程中需要进行大量的耗时运算，如果主线程想等待子线程执行完毕后，获得子线程中的处理完的某个数据，就要用到join方法了。
 
-### 6.6 sleep()方法—其他通信方法
+### 6.6 sleep()方法
 
-**sleep方法是不会释放当前的锁，而wait方法会。**==这也是最常见的一个多线程面试题。==
+**sleep方法是不会释放当前的锁，而wait方法会。**
 
 它们还有这些区别：
 
@@ -316,11 +306,23 @@ join()方法是Thread类的一个实例方法。它的作用是让当前线程�
 - wait释放cpu资源，同时释放锁；sleep释放cpu资源，但是不释放锁，所以易死锁。
 - wait必须放在同步块或同步方法中，而sleep可以在任意位置。
 
-### 6.7 ThreadLocal类—其他通信方法
+### 6.7 ThreadLocal类
 
-==没太懂这里，马一下==
+**1、定义**
 
+一个变量可以被任何线程访问修改，`ThreadLocal`类可以让每个线程绑定自己的，可以将`ThreadLocal`类想成存放数据的盒子，盒子中可以存储每个线程的私有数据。
 
+每个访问ThreadLocal变量的线程都会有这个变量的本地副本，通过`get()`和`set()`来获取和修改副本的值。
+
+**2、ThreadLocal思想**
+
+新建一个ThreadLocal变量，调用set方法后，TL会在该线程new一个ThreadLocalMap，这个存放键值对<TL, value>，Key是该TL。
+
+![ThreadLocal数据结构](./img/threadlocal数据结构.jpg)
+
+**3、ThreadLocal内存泄漏问题**
+
+`ThreadLocalMap` 中使用的 key 为 `ThreadLocal` 的弱引用,而 value 是强引用。所以，如果 `ThreadLocal` 没有被外部强引用的情况下，在垃圾回收的时候，key 会被清理掉，而 value 不会被清理掉。这样一来，`ThreadLocalMap` 中就会出现 key 为 null 的 Entry。假如我们不做任何措施的话，value 永远无法被 GC 回收，这个时候就可能会产生内存泄露。ThreadLocalMap 实现中已经考虑了这种情况，在调用 `set()`、`get()`、`remove()` 方法的时候，会清理掉 key 为 null 的记录。使用完 `ThreadLocal`方法后 最好手动调用`remove()`方法
 
 # Java并发原理篇
 
@@ -366,13 +368,9 @@ join()方法是Thread类的一个实例方法。它的作用是让当前线程�
 
 **指令重排可以保证串⾏语义⼀致，但是没有义务保证多线程间的语义也⼀致。**
 
-==省略重排序的理论模型==
-
 ### 8.2 happens-before
 
 是一个给程序员使用的规则，只要程序员在写代码的时候遵循happens-before规则，JVM就能保证指令在多线程之间的顺序性符合程序员的预期。
-
-==省略==
 
 ### 8.3 volatile
 
@@ -385,8 +383,6 @@ JVM如何限制处理器的重排序？通过**内存屏障**（读屏障，写�
 
 - 阻止屏障两侧的指令重排序；
 - 强制把写缓冲区/高速缓存中的脏数据等写回主内存，或者让缓存中相应的数据失效。
-
-==省略屏障细节==
 
 ### 8.4 synchronized关键字
 
@@ -420,8 +416,6 @@ public void blockLock() {
 2. 偏向锁状态
 3. 轻量级锁状态
 4. 重量级锁状态
-
-==各种锁的细节太多了，[详见](http://concurrent.redspider.group/article/02/9.html)==
 
 | 锁       | 优点                                                         | 缺点                                             | 适用场景                             |
 | -------- | ------------------------------------------------------------ | ------------------------------------------------ | ------------------------------------ |
@@ -460,8 +454,6 @@ CAS的过程如下：
 在Java中，如果一个方法是native的，那Java就不负责具体实现它，而是交给底层的JVM使用c或者c++去实现。
 
 `Unsafe`类中有几个`native`的方法是关于CAS，底层是C++写的。
-
-==CAS省略，先看JavaGuide总结==
 
 ### 8.6 AQS
 
@@ -502,6 +494,16 @@ AQS 使用一个 int 成员变量（volatile int state）来表示同步状态�
 相对来说，非公平锁会有更好的性能，因为它的吞吐量比较大。当然，非公平锁让获取锁的时间变得更加不确定，可能会导致在阻塞队列中的线程长期处于饥饿状态。
 
 **共享模式（Share）：**同时可以被多个线程获取，具体的资源个数可以通过参数指定。如Semaphore/CountDownLatch。
+
+#### ReentrantLock和Synchronized对比
+
+1. 两者都是可重入锁
+2. ReentrantLock实现依赖Java API，Synchronized基于JVM实现。
+3. **ReentrantLock等待可中断** : `ReentrantLock`提供了一种能够中断等待锁的线程的机制，通过 `lock.lockInterruptibly()` 来实现这个机制。也就是说**正在等待的线程可以选择放弃等待，改为处理其他事情**。
+4. **ReentrantLock可实现公平锁** : `ReentrantLock`可以指定是公平锁还是非公平锁。而`synchronized`只能是非公平锁。`ReentrantLock`默认情况是非公平的，可以通过 `ReentrantLock`类的`ReentrantLock(boolean fair)`构造方法来制定是否是公平的。
+5. **ReentrantLock可实现选择性通知（锁可以绑定多个条件）**: `synchronized`关键字与`wait()`和`notify()`/`notifyAll()`方法相结合可以实现等待/通知机制。`ReentrantLock`类当然也可以实现，但是需要借助于`Condition`接口与`newCondition()`方法。
+
+`Condition`是 JDK1.5 之后才有的，它具有很好的灵活性，比如可以实现多路通知功能也就是在一个`Lock`对象中可以创建多个`Condition`实例（即对象监视器），**线程对象可以注册在指定的`Condition`中，从而可以有选择性的进行线程通知，在调度线程上更加灵活。 在使用`notify()/notifyAll()`方法进行通知时，被通知的线程是由 JVM 选择的，用`ReentrantLock`类结合`Condition`实例可以实现“选择性通知”** ，这个功能非常重要，而且是 Condition 接口默认提供的。而`synchronized`关键字就相当于整个 Lock 对象中只有一个`Condition`实例，所有的线程都注册在它一个身上。如果执行`notifyAll()`方法的话就会通知所有处于等待状态的线程这样会造成很大的效率问题，而`Condition`实例的`signalAll()`方法 只会唤醒注册在该`Condition`实例中的所有等待线程。
 
 #### 8.6.3 AQS底层的模板方法模式
 
