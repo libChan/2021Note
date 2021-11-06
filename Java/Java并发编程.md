@@ -63,7 +63,7 @@ log.debug(String.valueOf(futureTask.get()));
 
 1. 线程从Running进入Time Waiting状态（阻塞态）
 2. 其他线程可以用interrupt方法打断正在sleep的线程，sleep方法会抛出异常
-3. 睡眠结束后的线程进入###状态，不一定能立刻得到执行
+3. 睡眠结束后的线程进入就绪状态，不一定能立刻得到执行
 4. TimeUnit的sleep比Thread的sleep可读性更好
 
 - **yeild()**
