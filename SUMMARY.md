@@ -38,7 +38,15 @@
 
 - [操作系统](./OS/操作系统.md)
 
+- [算法](./Algorithm/README.md)
+
+  - [动态规划](./Algorithm/动态规划.md)
+  - [二分查找](./Algorithm/二分查找.md)
+  - [排序](./Algorithm/排序.md)
+  - [BFS](./Algorithm/BFS.md)
+
 - [Java](./Java/README.md)
+  
   - [Java并发](./Java/Java并发.md)
   - [Java基础](./Java/Java基础.md)
   - [Java容器](./Java/Java容器.md)
@@ -78,6 +86,11 @@
   * [网络层](Network/网络层.md)
   * [网络33问](Network/计算机网络.md)
 * [操作系统](OS/操作系统.md)
+* [算法](./Algorithm/README.md)
+  - [动态规划](./Algorithm/动态规划.md)
+  - [二分查找](./Algorithm/二分查找.md)
+  - [排序](./Algorithm/排序.md)
+  - [BFS](./Algorithm/BFS.md)
 * [Java](java/README.md)
   * [Java并发](Java/Java并发.md)
   * [Java基础](Java/Java基础.md)
