@@ -26,6 +26,7 @@
   - [索引](./DataBase/DB-索引.md)
   - [锁](./DataBase/DB-锁.md)
   - [常见存储引擎](./DataBase/常见存储引擎.md)
+  - [存储引擎](DataBase/DB-存储引擎.md)
   - [SQL优化](./DataBase/DB-优化.md)
   
 - [计算机网络](./Network/README.md)
@@ -69,6 +70,7 @@
   * [索引](DataBase/DB-索引.md)
   * [锁](DataBase/DB-锁.md)
   * [常见存储引擎](DataBase/常见存储引擎.md)
+  * [存储引擎](DataBase/DB-存储引擎.md)
   * [SQL优化](DataBase/DB-优化.md)
 * [计算机网络](Network/README.md)
   * [应用层](Network/应用层.md)
