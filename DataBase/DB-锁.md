@@ -1,7 +1,5 @@
 # 数据库—锁
 
-[TOC]
-
 ## 1. 事务的四大特性-ACID
 
 ### 1.1 ACID特性如何实现
@@ -183,12 +181,7 @@ MySQL5.1.22版本后，**InnoDB提供轻量级互斥量的自增长实现机制�
 
 ##### Gap Lock
 
-间隙锁，锁定一个范围，但不包含记录本身。Gap Lock的作用是阻止多个事务将记录插入到同一范围内，但这会导致幻象问题。
-
-关闭Gap Lock的显式方法：
-
-- 事务隔离级别设置为READ COMMITTED
-- 将参数innodb_locks_unsafe_for_binlog设置为1
+间隙锁，锁定一个范围，但不包含记录本身。Gap Lock的作用是阻止多个事务将记录插入到同一范围内，但这会导致幻象问题。也可以显式关闭Gap Lock。
 
 ##### Next-Key Lock
 
@@ -212,7 +205,9 @@ Gap+Record。锁定一个范围，并锁定记录本身。**InnoDB对于行的�
 
 默认事务隔离级别下（可重复读），InnoDB采用Next-Key Locking解决幻像问题。Oracle在串行化级别下才解决幻象问题。
 
-- **为什么RR级别下Next-Key能解决幻读？**
+- **InnoDB在RR级别如何解决幻读问题？**
+
+若是快照读，则MVCC每次读的都是事务开始时的数据，不存在幻读问题。如果是加锁读，通过Next-Key解决。
 
 大多数SQL引擎默认是Read-Commited级别（读取已提交）。
 
@@ -249,10 +244,10 @@ Gap+Record。锁定一个范围，并锁定记录本身。**InnoDB对于行的�
 MVCC读不加锁，因此读写不冲突，并发性能好。InnoDB实现MVCC，主要基于以下技术及数据结构：
 
 - **隐藏列：**InnoDB中每行数据都有隐藏列，隐藏列中包含了本行数据的事务id、指向undo log的指针等。
-- **基于undo log的版本链：**每条undo log也会指向更早版本的undo log，从而形成一条版本链。
+- **基于undo log的版本链：**每条undo log也会指向更早版本的undo log，从而形成一条**版本链**。
 - **ReadView：**通过隐藏列和版本链，MySQL可以将数据恢复到指定版本；但是具体要恢复到哪个版本，则需要根据ReadView来确定。事务在某一时刻给整个事务系统（trx_sys）打快照，之后再进行读操作时，会将读到数据中的事务id与trx_sys快照对比，从而判断对该事务（ReadView）是否可见。
 
-InnoDB默认的RR事务隔离级别下，不显式加`lock in share mode`与`for update`的`select`操作都属于快照读，使用MVCC，保证事务执行过程中只有第一次读之前提交的修改和自己的修改可见，其他的均不可见。（不理解）
+**InnoDB默认的RR事务隔离级别下，不显式加`lock in share mode`与`for update`的`select`操作都属于快照读，使用MVCC，保证事务执行过程中只有第一次读之前提交的修改和自己的修改可见，其他的均不可见。**
 
 ## 参考
 
