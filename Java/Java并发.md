@@ -389,7 +389,7 @@ public void blockLock() {
 
 Java里只要以Reentrant开头命名的锁都是可重入锁，而且**JDK提供的所有现成的Lock实现类，包括synchronized关键字锁都是可重入的。**
 
-{% embed url="https://zhuanlan.zhihu.com/p/71156910" %}
+![图片](https://mmbiz.qpic.cn/mmbiz_jpg/ibBMVuDfkZUljPgPC9h7FmEyOSbttvPehP1heYUUerKq0Xd3k7DGl9xqicy6NsgJow4xHIYSK0Oc90aN7TO2TsibA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1)
 
 **产生死锁的四个条件：**
 
@@ -422,7 +422,6 @@ Java里只要以Reentrant开头命名的锁都是可重入锁，而且**JDK提�
 
    逐个撤销陷入死锁的进程，回收其资源并重新分配，直至死锁解除。
 
-   
 
 在Java 6 及其以后，一个对象其实有四种锁状态，它们级别由低到高依次是：
 
@@ -465,9 +464,13 @@ CAS的过程如下：
 
 **CAS是一种原子操作，它是一种系统原语，是一条CPU的原子指令，从CPU层面保证它的原子性。当多个线程同时使用CAS操作一个变量时，只有一个会胜出，并成功更新，其余均会失败，但失败的线程并不会被挂起，仅是被告知失败，并且允许再次尝试，当然也允许失败的线程放弃操作。**
 
-在Java中，如果一个方法是native的，那Java就不负责具体实现它，而是交给底层的JVM使用c或者c++去实现。
+**CAS的缺点主要有3点：**
 
-`Unsafe`类中有几个`native`的方法是关于CAS，底层是C++写的。
+1. **ABA问题**：ABA的问题大部分场景下都不影响并发的最终效果。Java中有AtomicStampedReference来解决这个问题，他**加入预期标志和更新后标志**两个字段，更新时不光检查值，还要检查当前的标志是否等于预期标志，全部相等的话才会更新。（**其实就是版本号解决ABA问题**）
+
+2. **循环时间长开销大**：自旋CAS的方式如果长时间不成功，会给CPU带来很大的开销。
+
+3. **只能保证一个共享变量的原子操作**：只对一个共享变量操作可以保证原子性，但是多个则不行，多个可以通过AtomicReference来处理或者使用锁synchronized实现。
 
 #### 8.6 AQS
 
@@ -481,11 +484,9 @@ AQS是一个用来**构建锁和同步器的框架**，使用AQS能简单且高�
 
 **8.6.1 AQS原理**
 
-**AQS 核心思想是，如果被请求的共享资源空闲，则将当前请求资源的线程设置为有效的工作线程，并且将共享资源设置为锁定状态。如果被请求的共享资源被占用，那么就需要一套线程阻塞等待以及被唤醒时锁分配的机制，这个机制 AQS 是用 CLH 队列锁实现的，即将暂时获取不到锁的线程加入到队列中。**
+**AQS内部维护一个state状态位，尝试加锁的时候通过CAS修改值，如果成功设置为1，并且把当前线程ID赋值，则代表加锁成功，一旦获取到锁，其他的线程将会被阻塞进入阻塞队列自旋，获得锁的线程释放锁的时候将会唤醒阻塞队列中的线程，释放锁的时候则会把state重新置为0，同时当前线程ID置为空。。**
 
 ![enter image description here](img/CLH.png)
-
-AQS 使用一个 int 成员变量（volatile int state）来表示同步状态，通过内置的 FIFO 队列来完成获取资源线程的排队工作。AQS 使用 CAS 对该同步状态进行原子操作实现对其值的修改。
 
 **8.6.2 AQS的资源共享方式**
 
@@ -515,13 +516,9 @@ AQS 使用一个 int 成员变量（volatile int state）来表示同步状态�
 2. ReentrantLock实现依赖Java API，Synchronized基于JVM实现。
 3. **ReentrantLock等待可中断** : `ReentrantLock`提供了一种能够中断等待锁的线程的机制，通过 `lock.lockInterruptibly()` 来实现这个机制。也就是说**正在等待的线程可以选择放弃等待，改为处理其他事情**。
 4. **ReentrantLock可实现公平锁** : `ReentrantLock`可以指定是公平锁还是非公平锁。而`synchronized`只能是非公平锁。`ReentrantLock`默认情况是非公平的，可以通过 `ReentrantLock`类的`ReentrantLock(boolean fair)`构造方法来制定是否是公平的。
-5. **ReentrantLock可实现选择性通知（锁可以绑定多个条件）**: `synchronized`关键字与`wait()`和`notify()`/`notifyAll()`方法相结合可以实现等待/通知机制。`ReentrantLock`类当然也可以实现，但是需要借助于`Condition`接口与`newCondition()`方法。
+5. **ReentrantLock可以绑定多个条件**: `synchronized`关键字与`wait()`和`notify()`/`notifyAll()`方法相结合可以实现等待/通知机制。`ReentrantLock`类当然也可以实现，但是需要借助于`Condition`接口与`newCondition()`方法。
 
-`Condition`是 JDK1.5 之后才有的，它具有很好的灵活性，比如可以实现多路通知功能也就是在一个`Lock`对象中可以创建多个`Condition`实例（即对象监视器），**线程对象可以注册在指定的`Condition`中，从而可以有选择性的进行线程通知，在调度线程上更加灵活。 在使用`notify()/notifyAll()`方法进行通知时，被通知的线程是由 JVM 选择的，用`ReentrantLock`类结合`Condition`实例可以实现“选择性通知”** ，这个功能非常重要，而且是 Condition 接口默认提供的。而`synchronized`关键字就相当于整个 Lock 对象中只有一个`Condition`实例，所有的线程都注册在它一个身上。如果执行`notifyAll()`方法的话就会通知所有处于等待状态的线程这样会造成很大的效率问题，而`Condition`实例的`signalAll()`方法 只会唤醒注册在该`Condition`实例中的所有等待线程。
-
-**8.6.3 AQS底层的模板方法模式**
-
-\==省略，[详见](https://snailclimb.gitee.io/javaguide/#/docs/java/multi-thread/AQS%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8AAQS%E5%90%8C%E6%AD%A5%E7%BB%84%E4%BB%B6%E6%80%BB%E7%BB%93)==
+`Condition`是 JDK1.5 之后才有的，它具有很好的灵活性，比如可以实现多路通知功能也就是在一个`Lock`对象中可以创建多个`Condition`实例（即对象监视器），**线程对象可以注册在指定的`Condition`中，从而可以有选择性的进行线程通知，在调度线程上更加灵活。 在使用`notify()/notifyAll()`方法进行通知时，被通知的线程是由 JVM 选择的，用`ReentrantLock`类结合`Condition`实例可以实现“选择性通知”** ，这个功能非常重要，而且是 Condition 接口默认提供的。而`synchronized`关键字就相当于整个 Lock 对象中只有一个`Condition`实例，所有的线程都注册在它一个身上。
 
 **8.6.4 Semaphore(信号量)**
 

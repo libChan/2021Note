@@ -115,13 +115,13 @@ Java8在同样的前提下并不会引起死循环，原因是扩容转移后前
 
 **HashTable：**在竞争激烈的并发环境下表现出效率低下的原因，是因为所有访问HashTable的线程都必须竞争同一把锁。
 
-ConcurrentHashMap：那假如容器里有多把锁，每一把锁用于锁容器其中一部分数据，那么当多线程访问容器里不同数据段的数据时，线程间就不会存在锁竞争，从而可以有效的提高并发访问效率。**ConcurrentHashMap首先将数据分成一段一段的存储，然后给每一段数据配一把锁。**
+**ConcurrentHashMap：**1.7使用Segment+HashEntry分段锁的方式实现，1.8则抛弃了Segment，改为使用CAS+synchronized+Node实现，同样也加入了红黑树，避免链表过长导致性能的问题。
 
-put：
+**put：**
 
 先定位segment，获取segment的锁，如果失败先自旋，自旋达到一定阈值升级为竞争互斥锁。
 
-get：
+**get：**
 
 只需要将 Key 通过 Hash 之后定位到具体的 Segment ，再通过一次 Hash 定位到具体的元素上。
 
