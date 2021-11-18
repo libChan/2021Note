@@ -20,6 +20,9 @@
   * [Java基础](Java/Java基础.md)
   * [Java容器](Java/Java容器.md)
   * [JVM](Java/JVM.md)
+* [设计模式](./DesignMode/READM.md)
+  * 
+
 
 - [Spring](Spring/README.md)
   - [AOP](./Spring/AOP.md)
