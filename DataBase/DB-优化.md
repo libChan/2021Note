@@ -174,5 +174,20 @@ where job != 'SALES';
 15. select count(*) from table；这样不带任何条件的count会引起全表扫描，并且没有任何业务意义，是一定要杜绝的。
 16. **索引并不是越多越好**，索引固然可以提高相应的 select 的效率，但同时也降低了 insert 及 update 的效率，因为 insert 或 update 时有可能会重建索引，所以怎样建索引需要慎重考虑，视具体情况而定。**一个表的索引数最好不要超过5个**，若太多则应考虑一些不常使用到的列上建的索引是否有 必要。
 
+## 4.SQL执行顺序
 
+```
+(7)     SELECT 
+(8)     DISTINCT <select_list>
+(1)     FROM <left_table>
+(3)     <join_type> JOIN <right_table>
+(2)     ON <join_condition>
+(4)     WHERE <where_condition>
+(5)     GROUP BY <group_by_list>
+(6)     HAVING <having_condition>
+(9)     ORDER BY <order_by_condition>
+(10)    LIMIT <limit_number>
+```
+
+![img](https://images2015.cnblogs.com/blog/690102/201607/690102-20160714101317482-683714239.png)
 
